@@ -27,7 +27,7 @@ fn my_test() {
 }
 ```
 
-`assert_golden!` macro is similarly to `assert_eq!`, but it accepts only one argument.
+`assert_golden!` macro is similarly to `assert_eq!`, but it accepts only one argument. The argument must implement the `ToString` trait.
 
 3. Create golden files using Cargo:
 
