@@ -51,6 +51,10 @@ cargo test
 
 Delete the golden files and rerun the tests.
 
+6. Commit and version control:
+
+Golden files should be committed to your version control system along with your source code. By tracking changes to golden files, you can easily review and manage modifications to your test outputs.
+
 ## Copyright
 
 Copyright (c) 2023 carrotflakes (carrotflakes@gmail.com)
