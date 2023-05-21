@@ -12,20 +12,26 @@ macro_rules! assert_golden {
 }
 
 pub fn assert_impl<T: ToString>(path: &str, actual: T) {
-    let create_mode = std::env::var(ENV_CREATE).is_ok();
+    let mode = get_mode();
     let actual = actual.to_string();
     let file_path = std::path::Path::new(path).with_extension("rs.gld");
 
-    if create_mode {
+    if mode == Mode::Create {
         create_golden_file(&file_path, actual);
     } else {
         let Ok(file) = std::fs::File::open(&file_path) else {
-            // Turn on create mode if the golden file is not found.
-            std::env::set_var(ENV_CREATE, "1");
-            create_golden_file(&file_path, actual);
-            return;
-            // panic!("golden file not found, run with ENV_CREATE=1 to create it");
+            if mode == Mode::Verify {
+                panic!("golden file not found");
+            } else {
+                // Turn on create mode
+                std::env::set_var(ENV_MODE, "create");
+                create_golden_file(&file_path, actual);
+                return;
+            }
         };
+        if mode == Mode::Auto {
+            std::env::set_var(ENV_MODE, "verify");
+        }
         let reader = std::io::BufReader::new(file);
         let index = next_index(path);
         let expect = reader.lines().skip(2 + index).next().unwrap().unwrap();
@@ -33,7 +39,24 @@ pub fn assert_impl<T: ToString>(path: &str, actual: T) {
     }
 }
 
-const ENV_CREATE: &str = "GILDER_CREATE";
+#[derive(Debug, PartialEq, Eq)]
+enum Mode {
+    Create,
+    Verify,
+    Auto,
+}
+
+fn get_mode() -> Mode {
+    let mode = std::env::var(ENV_MODE).unwrap_or("auto".to_string());
+    match mode.as_str() {
+        "create" => Mode::Create,
+        "verify" => Mode::Verify,
+        "auto" => Mode::Auto,
+        _ => panic!("invalid mode"),
+    }
+}
+
+const ENV_MODE: &str = "GILDER_MODE";
 
 fn create_golden_file(path: &std::path::PathBuf, actual: String) {
     let mut file = open_golden_file_for_create(&path).unwrap();
