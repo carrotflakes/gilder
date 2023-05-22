@@ -2,9 +2,11 @@
 
 Gilder is a Rust library for golden testing.
 
-Golden tests are a commonly used approach in software testing where the expected output of a test is stored as a reference (golden file) and then compared against the actual output of the test run. In short, it allows you to ensure that the output of your function remains unchanged without the need to write explicit expectations.
+The golden test is a testing method commonly used to detect changes in program output. It ensures that the results remain consistent even when modifying the code.
 
-Gilder is designed to minimize the implementation cost, and the only API you will use is the `assert_golden!` macro.
+In a golden test, the program's output is saved in a file known as the golden file to preserve it. During testing, the actual output is compared against the content of the golden file.
+
+Gilder is designed to minimize the implementation cost and provides only one API for usage, which is the `assert_golden!` macro. It can be used similar to `assert_eq!` but without the second argument.
 
 # Getting Started
 
@@ -15,7 +17,7 @@ Gilder is designed to minimize the implementation cost, and the only API you wil
 gilder = "0.1"
 ```
 
-2. Write a new golden test using the Gilder API:
+2. Write a new test using `assert_golden!` macro:
 
 ``` rust
 #[test]
@@ -27,7 +29,7 @@ fn my_test() {
 }
 ```
 
-`assert_golden!` macro is similarly to `assert_eq!`, but it accepts only one argument. The argument must implement the `ToString` trait.
+The argument to `assert_golden!` must implement the `ToString` trait to write to the golden file.
 
 3. Create golden files:
 
