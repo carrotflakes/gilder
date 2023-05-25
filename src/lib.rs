@@ -7,7 +7,7 @@ use std::{
 macro_rules! assert_golden {
     ($actual:expr) => {
         let path = file!();
-        ::gilder::assert_impl(path, $actual)
+        $crate::assert_impl(path, $actual)
     };
 }
 
@@ -35,7 +35,14 @@ pub fn assert_impl<T: ToString>(path: &str, actual: T) {
         let reader = std::io::BufReader::new(file);
         let index = next_index(path);
         let expect = reader.lines().skip(2 + index).next().unwrap().unwrap();
-        assert_eq!(expect, format!("{:?}", actual));
+        if expect != format!("{:?}", actual) {
+            panic!(
+                r#"assertion failed: The given value differs from the previous value (from the golden file).
+  actual: `{:?}`,
+  expect: `{:?}`"#,
+                actual, expect
+            )
+        }
     }
 }
 
