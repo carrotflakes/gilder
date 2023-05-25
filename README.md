@@ -1,6 +1,6 @@
 # Gilder
 
-Gilder is a Rust library for golden testing.
+Gilder is an assertion library for lazy folks (also say a golden testing library).
 
 The golden test is a testing method commonly used to detect changes in program output. It ensures that the results remain consistent even when modifying the code.
 
@@ -43,11 +43,13 @@ A golden file with the `.gld` extension will be saved in the same directory as t
 
 4. Testing:
 
-When running the tests with the golden files present, the behavior is similar to that of a regular test. The actual output of the test is compared against the stored golden files, and if they match, the test is considered to pass.
+When running the tests with the golden files present, the behavior is the same as a regular test.
 
 ``` shell
 cargo test
 ```
+
+The macro will raise an error if it detects a change in value.
 
 5. Updating the golden files:
 
