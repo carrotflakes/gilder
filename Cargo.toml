@@ -3,6 +3,7 @@ name = "gilder"
 version = "0.1.0"
 edition = "2021"
 authors = ["carrotflakes <carrotflakes@gmail.com>"]
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/carrotflakes/gilder"
 keywords = ["testing", "assert"]
 description = "Golden testing library"
