@@ -1,5 +1,7 @@
 # Gilder
 
+[![Crates.io](https://img.shields.io/crates/v/gilder.svg)](https://crates.io/crates/gilder)
+
 Gilder is an assertion library for lazy folks (also say a golden testing library).
 
 The golden test is a testing method commonly used to detect changes in program output. It ensures that the results remain consistent even when modifying the code.
