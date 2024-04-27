@@ -6,15 +6,15 @@ use std::{
 #[macro_export]
 macro_rules! assert_golden {
     ($actual:expr) => {
-        let path = file!();
+        let path = $crate::__get_absolute_path(env!("CARGO_MANIFEST_DIR"), file!());
         $crate::assert_impl(path, $actual)
     };
 }
 
-pub fn assert_impl<T: ToString>(path: &str, actual: T) {
+pub fn assert_impl<T: ToString>(path: std::path::PathBuf, actual: T) {
     let mode = get_mode();
     let actual = actual.to_string();
-    let file_path = std::path::Path::new(path).with_extension("rs.gld");
+    let file_path = path.with_extension("rs.gld");
 
     if mode == Mode::Create {
         create_golden_file(&file_path, actual);
@@ -124,15 +124,38 @@ fn get_id() -> u128 {
     id.unwrap()
 }
 
-static COUNTERS: Mutex<Vec<(String, usize)>> = Mutex::new(Vec::new());
+static COUNTERS: Mutex<Vec<(std::path::PathBuf, usize)>> = Mutex::new(Vec::new());
 
-pub fn next_index(name: &str) -> usize {
+fn next_index(name: std::path::PathBuf) -> usize {
     let mut counters = COUNTERS.lock().unwrap();
-    if let Some((_, count)) = counters.iter_mut().find(|(n, _)| n == name) {
+    if let Some((_, count)) = counters.iter_mut().find(|(n, _)| n == &name) {
         *count += 1;
         *count
     } else {
-        counters.push((name.to_string(), 0));
+        counters.push((name, 0));
         0
+    }
+}
+
+pub fn __get_absolute_path(manifest_dir: &str, file: &str) -> std::path::PathBuf {
+    let manifest_dir = std::path::Path::new(manifest_dir);
+    let file = std::path::Path::new(file);
+
+    let abs = manifest_dir.join(file);
+    if abs.exists() {
+        return abs;
+    }
+
+    // Search for the file in the parent directories
+    let mut dir = manifest_dir;
+    loop {
+        dir = match dir.parent() {
+            Some(dir) => dir,
+            None => panic!("not found: {}", file.display()),
+        };
+        let abs = dir.join(file);
+        if abs.starts_with(manifest_dir) && abs.exists() {
+            return abs;
+        }
     }
 }
