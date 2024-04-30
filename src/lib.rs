@@ -44,7 +44,7 @@ pub fn assert_impl<T: ToString>(path: std::path::PathBuf, actual: T) {
             panic!(
                 r#"assertion failed: The given value differs from the previous value (from the golden file).
   actual: `{:?}`,
-  expect: `{:?}`"#,
+  expect: `{}`"#,
                 actual, expect
             )
         }
